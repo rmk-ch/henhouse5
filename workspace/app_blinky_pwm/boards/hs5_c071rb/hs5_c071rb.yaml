@@ -1,0 +1,20 @@
+identifier: hs5_c071rb
+name: hs5_c071rb
+type: mcu
+arch: arm
+toolchain:
+  - zephyr
+  - gnuarmemb
+supported:
+  - adc
+  - counter
+  - dma
+  - gpio
+  - i2c
+  - pwm
+  - rtc
+  - spi
+  - watchdog
+ram: 24
+flash: 128
+vendor: st

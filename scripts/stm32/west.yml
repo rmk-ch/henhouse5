@@ -1,0 +1,132 @@
+manifest:
+  defaults:
+    remote: upstream
+
+  remotes:
+    - name: upstream
+      url-base: https://github.com/zephyrproject-rtos
+
+  group-filter: [-optional]
+
+  #
+  # Please add items below based on alphabetical order
+  projects:
+    - name: acpica
+      revision: 8d24867bc9c9d81c81eeac59391cda59333affd4
+      path: modules/lib/acpica
+    - name: cmsis
+      revision: 512cc7e895e8491696b61f7ba8066b4a182569b8
+      path: modules/hal/cmsis
+      groups:
+        - hal
+    - name: cmsis-dsp
+      revision: d80a49b2bb186317dc1db4ac88da49c0ab77e6e7
+      path: modules/lib/cmsis-dsp
+    - name: cmsis-nn
+      revision: e9328d612ea3ea7d0d210d3ac16ea8667c01abdd
+      path: modules/lib/cmsis-nn
+    - name: edtt
+      revision: b9ca3c7030518f07b7937dacf970d37a47865a76
+      path: tools/edtt
+      groups:
+        - tools
+    - name: fatfs
+      revision: 16245c7c41d2b79e74984f49b5202551786b8a9b
+      path: modules/fs/fatfs
+      groups:
+        - fs
+    - name: hal_infineon
+      revision: 0fe4f3aee9c8f7002996a94d91299b2c28d6a8fa
+      path: modules/hal/infineon
+      groups:
+        - hal
+    - name: hal_rpi_pico
+      revision: 7b57b24588797e6e7bf18b6bda168e6b96374264
+      path: modules/hal/rpi_pico
+      groups:
+        - hal
+    - name: hal_stm32
+      revision: 5cbc642b1a79d4f373b1587f8c3027f31bf0d30c
+      path: modules/hal/stm32
+      groups:
+        - hal
+    - name: hostap
+      path: modules/lib/hostap
+      revision: 8412f4b23b6267ee6035d25515a23aaf243f6ad7
+    - name: liblc3
+      revision: 48bbd3eacd36e99a57317a0a4867002e0b09e183
+      path: modules/lib/liblc3
+    - name: littlefs
+      path: modules/fs/littlefs
+      groups:
+        - fs
+      revision: 8f5ca347843363882619d8f96c00d8dbd88a8e79
+    - name: loramac-node
+      revision: fb00b383072518c918e2258b0916c996f2d4eebe
+      path: modules/lib/loramac-node
+    - name: lvgl
+      revision: b03edc8e6282a963cd312cd0b409eb5ce263ea75
+      path: modules/lib/gui/lvgl
+    - name: mbedtls
+      revision: 5f889934359deccf421554c7045a8381ef75298f
+      path: modules/crypto/mbedtls
+      groups:
+        - crypto
+    - name: mcuboot
+      revision: 990b1fcb367e27056b282f183e819964fdbfe907
+      path: bootloader/mcuboot
+      groups:
+        - bootloader
+    - name: mipi-sys-t
+      path: modules/debug/mipi-sys-t
+      groups:
+        - debug
+      revision: 33e5c23cbedda5ba12dbe50c4baefb362a791001
+    - name: net-tools
+      revision: 986bfeb040df3d9029366de8aea4ce1f84e93780
+      path: tools/net-tools
+      groups:
+        - tools
+    - name: openthread
+      revision: 3ae741f95e7dfb391dec35c48742862049eb62e8
+      path: modules/lib/openthread
+    - name: percepio
+      path: modules/debug/percepio
+      revision: 49e6dc202aa38c2a3edbafcc2dab85dec6aee973
+      groups:
+        - debug
+    - name: picolibc
+      path: modules/lib/picolibc
+      revision: 560946f26db075c296beea5b39d99e6de43c9010
+    - name: segger
+      revision: cf56b1d9c80f81a26e2ac5727c9cf177116a4692
+      path: modules/debug/segger
+      groups:
+        - debug
+    - name: tinycrypt
+      revision: 1012a3ebee18c15ede5efc8332ee2fc37817670f
+      path: modules/crypto/tinycrypt
+      groups:
+        - crypto
+    - name: trusted-firmware-m
+      revision: c150f48855f04d77451a39bfaa80d14eb61d918b
+      path: modules/tee/tf-m/trusted-firmware-m
+      groups:
+        - tee
+    - name: trusted-firmware-a
+      revision: 713ffbf96c5bcbdeab757423f10f73eb304eff07
+      path: modules/tee/tf-a/trusted-firmware-a
+      groups:
+        - tee
+    - name: uoscore-uedhoc
+      revision: 54abc109c9c0adfd53c70077744c14e454f04f4a
+      path: modules/lib/uoscore-uedhoc
+    - name: zcbor
+      revision: 9b07780aca6fb21f82a241ba386ad9b379809337
+      path: modules/lib/zcbor
+
+  self:
+    path: zephyr
+    west-commands: scripts/west-commands.yml
+    import: submanifests
+    

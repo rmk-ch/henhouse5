@@ -1,0 +1,5 @@
+board:
+  name: hs5_c071rb
+  vendor: rmkl
+  socs:
+    - name: stm32c071xx

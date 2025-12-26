@@ -1,0 +1,8 @@
+# Copyright (c) 2024 STMicroelectronics
+# SPDX-License-Identifier: Apache-2.0
+
+config BOARD_HS5_C071RB
+	select SOC_STM32C071XX
+config ARCH_ARM
+    bool "ARM Architecture"
+    default y
