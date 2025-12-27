@@ -12,7 +12,7 @@ class Motor {
     	virtual ~Motor() {};
         virtual const ErrorCode init();
 
-        virtual const ErrorCode setSpeedPercent(float speed);
+        virtual const ErrorCode setSpeed(const float speed);
 
     protected:
         const ErrorCode::Instance m_instance;

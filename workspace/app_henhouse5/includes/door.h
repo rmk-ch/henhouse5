@@ -8,10 +8,10 @@ class Door {
     public:
         Door(ErrorCode::Instance instance);
         virtual ~Door();
-        virtual ErrorCode openClose(bool do_open);
+        virtual const ErrorCode openClose(bool do_open);
 
     protected:
-        ErrorCode::Instance m_instance;
+        const ErrorCode::Instance m_instance;
         Motor m_motor;
         // m_upperEndSwitch;
         // m_lowerEndSwitch;

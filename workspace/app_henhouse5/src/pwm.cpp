@@ -29,7 +29,8 @@ const ErrorCode Pwm::setDutyCycle(float zeroToOne) {
     if (zeroToOne > max_duty_cycle || zeroToOne < min_duty_cycle) {
         return ErrorCode(m_instance, ErrorCode::Code::invalid_argument, 1);
     }
-    uint32_t pulse_width = static_cast<uint32_t>(std::lround(zeroToOne * static_cast<float>(m_period)));
+
+    uint32_t pulse_width = static_cast<uint32_t>(std::round(zeroToOne * static_cast<float>(m_period)));
 
     int32_t ret = pwm_set_dt(&m_pwm, m_period, pulse_width);
     if (ret) {

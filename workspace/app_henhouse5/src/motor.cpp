@@ -28,24 +28,24 @@ const ErrorCode Motor::init() {
     if (ret.hasFailed())
         return ret;
 
-    ret = setSpeedPercent(0.0);
+    ret = setSpeed(0.0);
     if (ret.hasFailed())
         return ret;
 
     return ErrorCode(m_instance, ErrorCode::Code::success);
 }
 
-const ErrorCode Motor::setSpeedPercent(float speed) {
+const ErrorCode Motor::setSpeed(const float speed) {
     ErrorCode ret;
     
-    const float speed_tolerance = 0.0001;
-    bool brake_state = (speed >= -speed_tolerance && speed <= speed_tolerance);
+    const float duty_cycle = std::fabs(speed);
+    const float min_duty_cycle = 0.1f; // torque is low, even without load
+    const bool brake_state = duty_cycle <= min_duty_cycle;
     if (brake_state) {
         printk("Motor stopping\n");
     }
     
-    bool dir_state = speed >= 0;
-    float duty_cycle = std::fabs(speed);
+    const bool dir_state = speed >= 0;
     
     ret = m_pwm.setDutyCycle(duty_cycle);
     if (ret.hasFailed()) {
