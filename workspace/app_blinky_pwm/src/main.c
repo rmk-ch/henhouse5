@@ -29,6 +29,8 @@ int main(void)
 	uint32_t *puint32;
 	const struct gpio_dt_spec brake_pin = GPIO_DT_SPEC_GET(DT_ALIAS(motor_a_brake), gpios);
 	const struct gpio_dt_spec dir_pin = GPIO_DT_SPEC_GET(DT_ALIAS(motor_a_dir), gpios);
+	uint32_t brake_state = 0;
+	uint32_t dir_state = 0;
 
 
 	printk("PWM-based LED fade for %s, channel=%u\n", pwm_led.dev->name, pwm_led.channel);
@@ -54,12 +56,12 @@ int main(void)
 		return 0;
 	}
 	
-	ret = gpio_pin_set_dt(&brake_pin, 1);
+	ret = gpio_pin_set_dt(&brake_pin, brake_state);
 	if (ret < 0) {
 		printk("Brake pin not set\n");
 		return ret;
 	}
-	ret = gpio_pin_set_dt(&dir_pin, 0);
+	ret = gpio_pin_set_dt(&dir_pin, dir_state);
 	if (ret < 0) {
 		printk("Dir pin not set\n");
 		return ret;
@@ -67,7 +69,7 @@ int main(void)
 
 	
 	period_ns = PWM_USEC(40); //pwm_led.period;
-	pulse_width_ns = period_ns/4;
+	pulse_width_ns = 3*period_ns/4;
 	step_ns = period_ns / NUM_STEPS;
 	dir = 1U;
 	if (!pwm_is_ready_dt(&pwm_led)) {
@@ -85,39 +87,66 @@ int main(void)
 	while (1) {
 		k_sleep(K_MSEC(500));
 		
-		ret = pwm_set_dt(&pwm_led, period_ns, pulse_width_ns);
-		if (ret) {
-			printk("Error %d: failed to set pulse width for LED\n", ret);
+		if (true) {
+			if (brake_state == 0) {
+				if (dir_state == 1) {
+					dir_state = 0;
+				}
+				else {
+					brake_state = 1;
+				}
+			}
+			else {
+				if (dir_state == 0) {
+					dir_state = 1;
+				}
+				else {
+					brake_state = 0;
+				}
+			}
 		}
-		ret = gpio_pin_toggle_dt(&brake_pin);
+		else {
+			if (dir_state == 0) {
+				dir_state = 1;
+			}
+			else {
+				dir_state = 0;
+			}
+		}
+		ret = gpio_pin_set_dt(&brake_pin, brake_state);
 		if (ret < 0) {
 			printk("Brake pin not toggled\n");
 			return ret;
 		}
-		ret = gpio_pin_toggle_dt(&dir_pin);
+		ret = gpio_pin_set_dt(&dir_pin, dir_state);
 		if (ret < 0) {
 			printk("Dir pin not toggled\n");
 			return ret;
 		}
 
-		printk("LED: Using pulse width %d%% (%uns=%ums)\n",
-				100 * pulse_width_ns / period_ns, pulse_width_ns, pulse_width_ns/1000/1000);
-
-		if (dir == 1) {
-			if (pulse_width_ns + step_ns >= period_ns) {
-				pulse_width_ns = period_ns;
-				dir = 0U;
-			} else {
-				pulse_width_ns += step_ns;
-			}
-		} else {
-			if (pulse_width_ns <= step_ns) {
-				pulse_width_ns = 0;
-				dir = 1U;
-			} else {
-				pulse_width_ns -= step_ns;
-			}
+		ret = pwm_set_dt(&pwm_led, period_ns, pulse_width_ns);
+		if (ret) {
+			printk("Error %d: failed to set pulse width for LED\n", ret);
 		}
+
+		printk("LED: Using pulse width %d%% (%ums), brake = %u, dir = %u\n",
+				100 * pulse_width_ns / period_ns, pulse_width_ns/1000/1000, brake_state, dir_state);
+
+		// if (dir == 1) {
+		// 	if (pulse_width_ns + step_ns >= period_ns) {
+		// 		pulse_width_ns = period_ns;
+		// 		dir = 0U;
+		// 	} else {
+		// 		pulse_width_ns += step_ns;
+		// 	}
+		// } else {
+		// 	if (pulse_width_ns <= step_ns) {
+		// 		pulse_width_ns = 0;
+		// 		dir = 1U;
+		// 	} else {
+		// 		pulse_width_ns -= step_ns;
+		// 	}
+		// }
 
 	}
 	return 0;
