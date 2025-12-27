@@ -77,7 +77,7 @@ int Motor::set_speed_percent(float speed) {
     
     float abs_speed;
     if (speed < 0) {
-        abs_speed = speed+1.0;
+        abs_speed = -speed;
         m_dir_state = 1;
     }
     else {
