@@ -1,23 +1,24 @@
+#ifndef __MOTOR_H
+#define __MOTOR_H
 
-#include <zephyr/drivers/pwm.h>
-#include <zephyr/drivers/gpio.h>
+#include "outputpin.h"
+#include "pwm.h"
+#include "errorcode.h"
 
 
 class Motor {
     public:
-        Motor();
+        Motor(const ErrorCode::Instance instance);
     	virtual ~Motor() {};
-        virtual int init();
+        virtual const ErrorCode init();
 
-        virtual int set_speed_percent(float speed);
+        virtual const ErrorCode setSpeedPercent(float speed);
 
     protected:
-        const struct pwm_dt_spec m_pwm;
-        const struct gpio_dt_spec m_brake_pin;
-        const struct gpio_dt_spec m_dir_pin;
-
-        uint32_t m_brake_state;
-        uint32_t m_dir_state;
-
-        uint32_t m_period = PWM_USEC(40);
+        const ErrorCode::Instance m_instance;
+        Pwm m_pwm;
+        OutputPin m_brake_pin;
+        OutputPin m_dir_pin;
 };
+
+#endif

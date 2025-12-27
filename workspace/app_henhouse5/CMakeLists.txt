@@ -11,6 +11,10 @@ project(henhouse5)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/includes)
 
 target_sources(app PRIVATE
+    src/errorcode.cpp
+    src/outputpin.cpp
+    src/pwm.cpp
+    src/door.cpp
     src/motor.cpp
     src/main.cpp
     )
