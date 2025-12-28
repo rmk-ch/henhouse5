@@ -14,6 +14,9 @@ class ErrorCode {
             motor_brake_pin = 4,
             motor_dir_pin = 5,
             motor_pwm = 6,
+            button_open = 7,
+            button_close = 8,
+            
         };
         enum Code : uint8_t {
             success = 0,

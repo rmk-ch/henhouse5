@@ -44,16 +44,17 @@
 		};
 	};
 
-	// gpio_keys {
-	// 	compatible = "gpio-keys";
+	gpio_keys {
+		compatible = "gpio-keys";
 
-	// 	user_button: button {
-	// 		label = "user button";
-	// 		gpios = <&gpioc 13 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-	// 		status = "okay";
-	// 		zephyr,code = <INPUT_KEY_0>;
-	// 	};
-	// };
+		user_button: button {
+			label = "user button";
+			gpios = <&gpioc 13 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+			status = "okay";
+			// zephyr,code = <INPUT_KEY_0>;
+		};
+	};
+
 
 	aliases {
 		motor-a-brake = &brakea;
@@ -61,7 +62,7 @@
 	// 	led0 = &green_led_1;
 	// 	led1 = &blue_led;
 	// 	pwm-led0 = &green_pwm_led;
-	// 	sw0 = &user_button;
+	 	button-open = &user_button;
 	// 	watchdog0 = &iwdg;
 	// 	die-temp0 = &die_temp;
 	// 	volt-sensor0 = &vref;
