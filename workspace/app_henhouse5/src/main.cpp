@@ -20,6 +20,7 @@ int main(void)
     motor.init();
 
     float speed = zero_speed;
+    k_sleep(K_SECONDS(10));
     while (true)
     {
         for (; speed < max_speed; speed += step) {
