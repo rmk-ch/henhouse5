@@ -22,11 +22,11 @@ int main(void)
     float speed = zero_speed;
     while (true)
     {
-        for (; speed <= max_speed; speed += step) {
+        for (; speed < max_speed; speed += step) {
             motor.setSpeed(speed);
             k_sleep(K_MSEC(1000));
         }
-        for (; speed >= min_speed; speed -= step) {
+        for (; speed > min_speed; speed -= step) {
             motor.setSpeed(speed);
             k_sleep(K_MSEC(1000));
         }
