@@ -1,5 +1,6 @@
 #include "pwm.h"
 #include <cmath>
+#include <algorithm>
 // #include <zephyr/sys/printk.h>
 
 
@@ -25,12 +26,13 @@ const ErrorCode Pwm::init() {
 
 const ErrorCode Pwm::setDutyCycle(float zeroToOne) {
     const float min_duty_cycle = static_cast<float>(0.0);
-    const float max_duty_cycle = static_cast<float>(1.0);
+    const float max_duty_cycle = static_cast<float>(1.01); // add safety margin to allow later saturation without throwing too many errors due to rounding/floating point
     if (zeroToOne > max_duty_cycle || zeroToOne < min_duty_cycle) {
         return ErrorCode(m_instance, ErrorCode::Code::invalid_argument, 1);
     }
 
     uint32_t pulse_width = static_cast<uint32_t>(std::round(zeroToOne * static_cast<float>(m_period)));
+    pulse_width = std::min(pulse_width, m_period); // saturate to maximum!
 
     int32_t ret = pwm_set_dt(&m_pwm, m_period, pulse_width);
     if (ret) {
