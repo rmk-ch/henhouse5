@@ -3,11 +3,11 @@
 #include <cmath>
 
 
-Motor::Motor(const ErrorCode::Instance instance) :
+Motor::Motor(const ErrorCode::Instance instance, Pwm &pwm, OutputPin &brake_pin, OutputPin &dir_pin) :
     m_instance(instance),
-    m_pwm(ErrorCode::Instance::motor_pwm, PWM_DT_SPEC_GET(DT_NODELABEL(green_pwm_led))),
-    m_brake_pin(ErrorCode::Instance::motor_brake_pin, GPIO_DT_SPEC_GET(DT_ALIAS(motor_a_brake), gpios)),
-    m_dir_pin(ErrorCode::Instance::motor_dir_pin, GPIO_DT_SPEC_GET(DT_ALIAS(motor_a_dir), gpios))
+    m_pwm(pwm),
+    m_brake_pin(brake_pin),
+    m_dir_pin(dir_pin)
 {
 
 }

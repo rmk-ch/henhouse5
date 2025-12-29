@@ -16,6 +16,9 @@ class ErrorCode {
             motor_pwm = 6,
             button_open = 7,
             button_close = 8,
+            endswitch_top = 9,
+            endswitch_bottom = 10,
+            motor_poweron_pin = 11,
             
         };
         enum Code : uint8_t {
@@ -26,6 +29,11 @@ class ErrorCode {
             invalid_config = 4,
             invalid_argument = 5,
             runtime = 6,
+            not_implemented = 7,
+            door_start_closing_wrong = 64,
+            door_start_opening_wrong = 65,
+            door_end_closing_wrong = 66,
+            door_end_opening_wrong = 67,
         };
 
 

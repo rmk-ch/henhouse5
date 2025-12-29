@@ -28,13 +28,18 @@
 		compatible = "gpio-leds";
 		status = "okay";
 		dira: dira {
-			gpios = <&gpioa 6 GPIO_ACTIVE_HIGH>; // PA6 = Arduino D12(MISO) = CN10 13(SPIA_MISO)
+			gpios = <&gpioa 6 GPIO_ACTIVE_HIGH>; // PA6 = D12/SPI1 MISO
 			label = "Motor control A Direction";
 		};
 
 		brakea: brakea {
-			gpios = <&gpioa 9 GPIO_ACTIVE_HIGH>; // PB3 = Arduino PWM/D9 = CN10 19 (GPIO)
+			gpios = <&gpioa 9 GPIO_ACTIVE_HIGH>; // PB3 = D9/PWM
 			label = "Motor control A Brake";
+		};
+
+		motorpoweron: motorpoweron {
+			gpios = <&gpioc 1 GPIO_ACTIVE_HIGH>; // PC1 = D7/IO
+			label = "Motor Power ON";
 		};
 	};
 
@@ -86,11 +91,23 @@
 			gpios = <&gpioc 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
 			zephyr,code = <INPUT_KEY_2>;
 		};
+
+		endswitchbottom: endswitchbottom {
+			label = "Endswitch Bottom";
+			gpios = <&gpiob 5 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+			// zephyr,code = <INPUT_KEY_2>;
+		};
+		endswitchtop: endswitchtop {
+			label = "Endswitch top";
+			gpios = <&gpiob 12 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+			// zephyr,code = <INPUT_KEY_2>;
+		};
 	};
 
 	aliases {
 		motor-a-brake = &brakea;
 		motor-a-dir = &dira;
+		motor-poweron = &motorpoweron;
 		button-open = &user_button_1;
 
 		led0 = &green_led_2;

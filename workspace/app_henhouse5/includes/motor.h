@@ -8,7 +8,7 @@
 
 class Motor {
     public:
-        Motor(const ErrorCode::Instance instance);
+        Motor(const ErrorCode::Instance instance, Pwm &pwm, OutputPin &brake_pin, OutputPin &dir_pin);
     	virtual ~Motor() {};
         virtual const ErrorCode init();
 
@@ -16,9 +16,9 @@ class Motor {
 
     protected:
         const ErrorCode::Instance m_instance;
-        Pwm m_pwm;
-        OutputPin m_brake_pin;
-        OutputPin m_dir_pin;
+        Pwm& m_pwm;
+        OutputPin& m_brake_pin;
+        OutputPin& m_dir_pin;
 };
 
 #endif

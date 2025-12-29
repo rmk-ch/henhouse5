@@ -1,7 +1,6 @@
 #include "pwm.h"
 #include <cmath>
 #include <algorithm>
-// #include <zephyr/sys/printk.h>
 
 
 Pwm::Pwm(const ErrorCode::Instance instance, const struct pwm_dt_spec pwm) :
@@ -16,11 +15,6 @@ const ErrorCode Pwm::init() {
         return ErrorCode(m_instance, ErrorCode::not_ready, 1);
 	}
 	
-	// MOE must be enabled!
-    uint32_t * puint32;
-	puint32 = (uint32_t*) 0x40012c44;
-	*puint32 |= 1<<15;
-
     return ErrorCode(m_instance, ErrorCode::Code::success);
 }
 
