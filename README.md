@@ -12,7 +12,9 @@ screen /dev/ttyACM0 115200
 
 ## Projects
 $ west build -b nucleo_c071rb samples/basic/blinky_pwm
+$ west build -b nucleo_wl55jc samples/basic/blinky
 $ west build -b hs5_c071rb .
+$ west build -b hs5_wl55jc .
 
 
 ## Docker setup rootless

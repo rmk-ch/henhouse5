@@ -11,7 +11,7 @@
 // #include <zephyr/dt-bindings/input/input-event-codes.h>
 
 / {
-	model = "Hennenstall5.0 with STM32C071RB-NUCLEO board";
+	model = "Henhouse5 with STM32C071RB-NUCLEO board";
 	compatible = "rmkl,hs5_c071rb";
 
 	chosen {
