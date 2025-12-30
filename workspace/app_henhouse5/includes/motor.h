@@ -10,9 +10,10 @@ class Motor {
     public:
         Motor(const ErrorCode::Instance instance, Pwm &pwm, OutputPin &brake_pin, OutputPin &dir_pin);
     	virtual ~Motor() {};
-        virtual const ErrorCode init();
+        const ErrorCode init();
 
-        virtual const ErrorCode setSpeed(const float speed);
+        const ErrorCode setSpeed(const float speed);
+        const ErrorCode testMotor();
 
     protected:
         const ErrorCode::Instance m_instance;

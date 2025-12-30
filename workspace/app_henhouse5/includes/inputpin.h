@@ -1,7 +1,7 @@
-#ifndef __INPUTPIN_H
-#define __INPUTPIN_H
+#pragma once
 
 #include <zephyr/drivers/gpio.h>
+#include <zephyr/zbus/zbus.h>
 #include "errorcode.h"
 
 struct InputPin_PrivateCallbackContainer {
@@ -12,25 +12,31 @@ struct InputPin_PrivateCallbackContainer {
      * Yes, complicated... 
      */
     struct gpio_callback callback_data;
-    class InputPin * inputpin;
+    ErrorCode::Instance m_instance;
+    const struct zbus_channel* m_zbus_channel;
+};
+
+struct InputPin_zbus_message {
+    uint32_t value;
 };
 
 class InputPin {
     public:
-        InputPin(ErrorCode::Instance instance, const struct gpio_dt_spec pin);
+        InputPin(ErrorCode::Instance instance, const struct gpio_dt_spec pin, const uint32_t zbus_id);
         virtual ~InputPin() {};
         const ErrorCode init();
         
-        // virtual const ErrorCode register_callback();
         const bool get();
-        const ErrorCode await(const k_timeout_t timeout); // Use K_FOREVER or K_MSEC/K_SECONDS/...
-        struct k_event m_event;
+        // const ErrorCode addObserver();
+        const ErrorCode await(k_timeout_t timeout);
+        
+        
         protected:
         const ErrorCode::Instance m_instance;
         const struct gpio_dt_spec m_pin;
         bool m_value;
+        const struct zbus_channel* m_zbus_channel;
         struct InputPin_PrivateCallbackContainer m_cb_container;
 
 };
 
-#endif

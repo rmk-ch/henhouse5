@@ -41,16 +41,17 @@ class ErrorCode {
         virtual ~ErrorCode() {};
 
         bool hasFailed();
+        const uint32_t serialize();
 
         static void registerCallback(void*());
-
-    protected:
-        static void* callback;
 
         Instance m_instance;
         Code m_code;
         uint8_t m_number;
-        uint32_t m_serialized;
+
+    protected:
+        static void* callback;
+
 
 };
 
