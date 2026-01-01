@@ -1,6 +1,4 @@
-
-#ifndef __ERRORCODE_H
-#define __ERRORCODE_H
+#pragma once
 
 #include <stdint.h>
 
@@ -9,7 +7,7 @@ class ErrorCode {
         enum Instance : uint8_t {
             INVALID = 0,
             main = 1,
-            door = 2,
+            doorcontrol = 2,
             motor = 3,
             motor_brake_pin = 4,
             motor_dir_pin = 5,
@@ -19,6 +17,7 @@ class ErrorCode {
             endswitch_top = 9,
             endswitch_bottom = 10,
             motor_poweron_pin = 11,
+            door_state = 12,
             
         };
         enum Code : uint8_t {
@@ -30,6 +29,7 @@ class ErrorCode {
             invalid_argument = 5,
             runtime = 6,
             not_implemented = 7,
+            container_full = 8,
             door_start_closing_wrong = 64,
             door_start_opening_wrong = 65,
             door_end_closing_wrong = 66,
@@ -54,5 +54,3 @@ class ErrorCode {
 
 
 };
-
-#endif

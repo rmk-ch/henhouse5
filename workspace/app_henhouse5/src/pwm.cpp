@@ -18,14 +18,14 @@ const ErrorCode Pwm::init() {
     return ErrorCode(m_instance, ErrorCode::Code::success);
 }
 
-const ErrorCode Pwm::setDutyCycle(float zeroToOne) {
-    const float min_duty_cycle = static_cast<float>(0.0);
-    const float max_duty_cycle = static_cast<float>(1.01); // add safety margin to allow later saturation without throwing too many errors due to rounding/floating point
-    if (zeroToOne > max_duty_cycle || zeroToOne < min_duty_cycle) {
+const ErrorCode Pwm::setDutyCycle(const uint8_t percent) {
+    const uint8_t min_duty_cycle = 0;
+    const uint8_t max_duty_cycle = 101; // add safety margin to allow later saturation without throwing too many errors due to rounding/floating point
+    if (percent > max_duty_cycle || percent < min_duty_cycle) {
         return ErrorCode(m_instance, ErrorCode::Code::invalid_argument, 1);
     }
 
-    uint32_t pulse_width = static_cast<uint32_t>(std::round(zeroToOne * static_cast<float>(m_period)));
+    uint32_t pulse_width = (static_cast<uint32_t>(percent) * m_period) /100;
     pulse_width = std::min(pulse_width, m_period); // saturate to maximum!
 
     int32_t ret = pwm_set_dt(&m_pwm, m_period, pulse_width);

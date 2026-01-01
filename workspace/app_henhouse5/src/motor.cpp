@@ -37,13 +37,13 @@ const ErrorCode Motor::init() {
     return ErrorCode(m_instance, ErrorCode::Code::success);
 }
 
-const ErrorCode Motor::setSpeed(const float speed) {
+const ErrorCode Motor::setSpeed(const int8_t percent) {
     ErrorCode ret;
     
-    const float duty_cycle = std::fabs(speed);
-    const float min_duty_cycle = 0.1f; // torque is low, even without load
+    const int8_t duty_cycle = std::abs(percent);
+    const int8_t min_duty_cycle = 10; // torque is low, even without load
     const bool brake_state = duty_cycle <= min_duty_cycle;    
-    const bool dir_state = speed >= 0;
+    const bool dir_state = percent >= 0;
     
     
     ret = m_brake_pin.set(brake_state);
@@ -64,18 +64,18 @@ const ErrorCode Motor::setSpeed(const float speed) {
     }
     else {
         LOG_INF("PWM %u%%, brake = %u, dir = %u",
-            static_cast<uint32_t>(duty_cycle * 100.0f), brake_state, dir_state);
+            duty_cycle, brake_state, dir_state);
     }
 
     return ErrorCode(m_instance, ErrorCode::Code::success);;
 }
 
 const ErrorCode Motor::testMotor() {
-    const float min_speed = -1.0;
-    const float max_speed = 1.0;
-    const float zero_speed = 0.0;
-    const float step = 0.1;
-    float speed = zero_speed;
+    const int8_t min_speed = -100;
+    const int8_t max_speed = 100;
+    const int8_t zero_speed = 0;
+    const int8_t step = 10;
+    int8_t speed = zero_speed;
     ErrorCode ec;
     
     for (; speed < max_speed; speed += step) {
@@ -83,14 +83,14 @@ const ErrorCode Motor::testMotor() {
         if (ec.hasFailed()) {
             return ec;
         }
-        k_sleep(K_MSEC(1000));
+        k_sleep(K_MSEC(200));
     }
     for (; speed > min_speed; speed -= step) {
         ec = setSpeed(speed);
         if (ec.hasFailed()) {
             return ec;
         }
-        k_sleep(K_MSEC(1000));
+        k_sleep(K_MSEC(200));
     }
 
     return ErrorCode(m_instance, ErrorCode::Code::success);

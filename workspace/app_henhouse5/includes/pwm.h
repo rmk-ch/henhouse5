@@ -1,5 +1,4 @@
-#ifndef __PWM_H
-#define __PWM_H
+#pragma once
 
 #include <zephyr/drivers/pwm.h>
 #include "errorcode.h"
@@ -10,7 +9,7 @@ class Pwm{
         virtual ~Pwm() {};
 
         const ErrorCode init();
-        const ErrorCode setDutyCycle(const float zeroToOne);
+        const ErrorCode setDutyCycle(const uint8_t percent);
 
     protected:
         const ErrorCode::Instance m_instance;
@@ -18,5 +17,3 @@ class Pwm{
 
         const uint32_t m_period = PWM_USEC(40);
 };
-
-#endif

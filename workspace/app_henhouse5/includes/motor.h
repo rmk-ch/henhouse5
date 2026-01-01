@@ -1,5 +1,4 @@
-#ifndef __MOTOR_H
-#define __MOTOR_H
+#pragma once
 
 #include "outputpin.h"
 #include "pwm.h"
@@ -12,7 +11,7 @@ class Motor {
     	virtual ~Motor() {};
         const ErrorCode init();
 
-        const ErrorCode setSpeed(const float speed);
+        const ErrorCode setSpeed(const int8_t percent);
         const ErrorCode testMotor();
 
     protected:
@@ -21,5 +20,3 @@ class Motor {
         OutputPin& m_brake_pin;
         OutputPin& m_dir_pin;
 };
-
-#endif

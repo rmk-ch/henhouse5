@@ -1,5 +1,4 @@
-#ifndef __OUTPUTPIN_H
-#define __OUTPUTPIN_H
+#pragma once
 
 #include <zephyr/drivers/gpio.h>
 #include "errorcode.h"
@@ -17,5 +16,3 @@ class OutputPin {
         const struct gpio_dt_spec m_pin;
         bool m_value;
 };
-
-#endif
