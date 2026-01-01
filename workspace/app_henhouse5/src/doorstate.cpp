@@ -5,6 +5,8 @@ LOG_MODULE_REGISTER(DoorState, LOG_LEVEL_INF);
 
 DoorState::DoorState(const ErrorCode::Instance instance, InputPin& endswitchTop, InputPin& endswitchBottom, k_thread_stack_t * stack, const uint32_t stack_size, const uint32_t priority) :
     Thread(instance, stack, stack_size, priority),
+    Publisher(instance),
+    m_state(DoorStateEnum::UNINITIALIZED),
     m_endswitch_top(endswitchTop),
     m_endswitch_bottom(endswitchBottom){
 }
@@ -12,15 +14,46 @@ DoorState::DoorState(const ErrorCode::Instance instance, InputPin& endswitchTop,
 
 const ErrorCode DoorState::run() {
 	LOG_INF("Doorstate started");
+    update_state();
     k_msgq_init(&m_endswitches_queue, m_endswitches_queue_buffer, sizeof(ErrorCode::Instance), m_n_endswitches_queue_max_entries);
 
     while(true) {
         uint32_t message;
         k_msgq_get(&m_endswitches_queue, &message, K_FOREVER);
 	    LOG_INF("Message %u received", message);
+
+        update_state();
+
     }
 
-    return ErrorCode(m_instance, ErrorCode::Code::not_implemented, 1);
+    return ErrorCode(Thread::m_instance, ErrorCode::Code::success);
+}
+
+void DoorState::update_state() {
+    bool state_top = m_endswitch_top.get();
+    bool state_bottom = m_endswitch_bottom.get();
+
+    DoorStateEnum prev_state = m_state;
+    if (state_top && !state_bottom) {
+        m_state = DoorStateEnum::OPEN;
+        LOG_INF("Door is open");
+    }
+    else if(!state_top && state_bottom) {
+        m_state = DoorStateEnum::CLOSED;
+        LOG_INF("Door is closed");
+    }
+    else if(!state_top && !state_bottom) {
+        m_state = DoorStateEnum::UNDEFINED;
+        LOG_INF("Door is in undefined state");
+    }
+    else if(state_top && state_bottom) {
+        m_state = DoorStateEnum::INVALID;
+        LOG_WRN("Door state is invalid - both endswitches are set!");
+    }
+
+    if (m_state != prev_state) {
+        _notify(m_state);
+    }
 }
 
 void DoorState::callback_endswitches(uint32_t message) {

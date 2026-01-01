@@ -27,8 +27,8 @@ int main(void)
     Motor motor = Motor(ErrorCode::Instance::motor, pwm, brake_pin, dir_pin);
     DoorControl door_control(ErrorCode::Instance::doorcontrol, motor, door_state);
 
-    endswitch_bottom.registerCallback(static_cast<static_fcn_uint32*>(&static_callback_endswitches), static_cast<void*>(&door_state));
-    endswitch_top.registerCallback(static_cast<static_fcn_uint32*>(&static_callback_endswitches), static_cast<void*>(&door_state));
+    endswitch_bottom.registerCallback(&static_callback_endswitches, &door_state);
+    endswitch_top.registerCallback(&static_callback_endswitches, &door_state);
 
     endswitch_bottom.init();
     endswitch_top.init();

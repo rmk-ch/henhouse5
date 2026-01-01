@@ -6,6 +6,8 @@
 #include "pubsub.h"
 #include "errorcode.h"
 
+class InputPin;
+
 struct InputPin_PrivateCallbackContainer {
     /**
      * The callback container is used privately within the Inputpin class. 
@@ -15,10 +17,14 @@ struct InputPin_PrivateCallbackContainer {
      */
     struct gpio_callback callback_data;
     ErrorCode::Instance m_instance;
-    ecpp::static_vector<callback_entry, 4> m_callbacks;
+    InputPin* this_ptr;
 };
-class InputPin {
+class InputPin : public Publisher<uint32_t> {
     public:
+        /**
+         * callback_event: choose one of https://docs.zephyrproject.org/latest/doxygen/html/group__gpio__interface.html#header-member-group,
+         * e.g. GPIO_INT_EDGE_TO_ACTIVE, GPIO_INT_EDGE_BOTH
+         */
         InputPin(ErrorCode::Instance instance, const struct gpio_dt_spec pin, const uint32_t callback_event = GPIO_INT_EDGE_TO_ACTIVE);
         virtual ~InputPin() {};
 
@@ -26,12 +32,12 @@ class InputPin {
         
         const bool get();
 
-        const ErrorCode registerCallback(static_fcn_uint32* function, void * instance);
+        // const ErrorCode registerCallback(static_fcn_uint32* function, void * instance);
         
     protected:
         const ErrorCode::Instance m_instance;
         const struct gpio_dt_spec m_pin;
         struct InputPin_PrivateCallbackContainer m_cb_container;
-        const uint32_t m_callback_event;
+        const uint32_t m_gpio_event;
 
 };
