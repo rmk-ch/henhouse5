@@ -20,10 +20,7 @@ const ErrorCode DoorState::run() {
     while(true) {
         uint32_t message;
         k_msgq_get(&m_endswitches_queue, &message, K_FOREVER);
-	    LOG_INF("Message %u received", message);
-
         update_state();
-
     }
 
     return ErrorCode(Thread::m_instance, ErrorCode::Code::success);
@@ -44,7 +41,15 @@ void DoorState::update_state() {
     }
     else if(!state_top && !state_bottom) {
         m_state = DoorStateEnum::UNDEFINED;
-        LOG_INF("Door is in undefined state");
+        if (prev_state == DoorStateEnum::CLOSED) {
+            LOG_INF("Door is opening (currently undefined state)");
+        }
+        else if (prev_state == DoorStateEnum::CLOSED) {
+            LOG_INF("Door is closing (currently undefined state)");
+        }
+        else {
+            LOG_INF("Door is in undefined state");            
+        }
     }
     else if(state_top && state_bottom) {
         m_state = DoorStateEnum::INVALID;
@@ -56,13 +61,17 @@ void DoorState::update_state() {
     }
 }
 
+const DoorStateEnum DoorState::get() {
+    return m_state;
+}
+
 void DoorState::callback_endswitches(uint32_t message) {
     k_msgq_put(&m_endswitches_queue, &message, K_NO_WAIT);
 }
 
 
 void static_callback_endswitches(void* thisptr, uint32_t message) {
-	LOG_INF("Callback static received");
+	LOG_DBG("Callback static received");
     DoorState* door_state = static_cast<DoorState*>(thisptr);
     door_state->callback_endswitches(message);
 }

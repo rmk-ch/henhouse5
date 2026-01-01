@@ -3,7 +3,7 @@
 #include <cmath>
 
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(Motor, LOG_LEVEL_INF);
+LOG_MODULE_REGISTER(Motor, LOG_LEVEL_WRN);
 
 Motor::Motor(const ErrorCode::Instance instance, Pwm &pwm, OutputPin &brake_pin, OutputPin &dir_pin) :
     m_instance(instance),

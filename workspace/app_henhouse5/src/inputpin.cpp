@@ -1,7 +1,7 @@
 #include "inputpin.h"
 #include <functional>
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(InputPin, LOG_LEVEL_DBG);
+LOG_MODULE_REGISTER(InputPin, LOG_LEVEL_WRN);
 
 
 void inputpin_isr(const struct device *dev, struct gpio_callback *cb,

@@ -29,26 +29,27 @@ int main(void)
 
     endswitch_bottom.registerCallback(&static_callback_endswitches, &door_state);
     endswitch_top.registerCallback(&static_callback_endswitches, &door_state);
+    door_state.registerCallback(&static_callback_doorstate, &door_control);
 
     endswitch_bottom.init();
     endswitch_top.init();
     button_open.init();
 
+    door_control.init();
     door_state.init();
 
     // actors
     motor.init();
 
-    door_control.init();
 
-    motor.testMotor();
+    // motor.testMotor();
 
-    k_sleep(K_SECONDS(5));
+    // k_sleep(K_SECONDS(5));
     while (true) {
         door_control.openClose(true);
-        k_sleep(K_SECONDS(3));
+        k_sleep(K_SECONDS(5));
         door_control.openClose(false);
-        k_sleep(K_SECONDS(3));
+        k_sleep(K_SECONDS(5));
     }
 
 	return 0;
