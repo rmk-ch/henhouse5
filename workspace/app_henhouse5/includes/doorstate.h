@@ -10,7 +10,9 @@ enum DoorStateEnum : uint32_t {
     OPEN = 1,
     CLOSED = 2,
     INVALID = 3,
-    UNDEFINED = 4,
+    OPENING = 4,
+    CLOSING = 5,
+    UNDEFINED = 6,
 };
 
 class DoorState : public Thread, public Publisher<DoorStateEnum> {

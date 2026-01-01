@@ -40,20 +40,22 @@ void DoorState::update_state() {
         LOG_INF("Door is closed");
     }
     else if(!state_top && !state_bottom) {
-        m_state = DoorStateEnum::UNDEFINED;
         if (prev_state == DoorStateEnum::CLOSED) {
-            LOG_INF("Door is opening (currently undefined state)");
+            m_state = DoorStateEnum::OPENING;
+            LOG_INF("Door is opening");
         }
-        else if (prev_state == DoorStateEnum::CLOSED) {
-            LOG_INF("Door is closing (currently undefined state)");
+        else if (prev_state == DoorStateEnum::OPEN) {
+            m_state = DoorStateEnum::CLOSING;
+            LOG_INF("Door is closing");
         }
         else {
+            m_state = DoorStateEnum::UNDEFINED;
             LOG_INF("Door is in undefined state");            
         }
     }
-    else if(state_top && state_bottom) {
+    else {
         m_state = DoorStateEnum::INVALID;
-        LOG_WRN("Door state is invalid - both endswitches are set!");
+        LOG_ERR("Door state is invalid - both endswitches are set!");
     }
 
     if (m_state != prev_state) {

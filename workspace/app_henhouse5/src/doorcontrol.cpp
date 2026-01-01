@@ -17,7 +17,9 @@ const ErrorCode DoorControl::init() {
 }
 const ErrorCode DoorControl::openClose(bool do_open) {
     DoorStateEnum expected_start_state;
+    DoorStateEnum expected_end_state;
     ErrorCode::Code errorcode_door_start_wrong;
+    ErrorCode::Code errorcode_door_end_wrong;
     int8_t speed_percent = +100;
     ErrorCode ec;
 
@@ -25,19 +27,28 @@ const ErrorCode DoorControl::openClose(bool do_open) {
         LOG_INF("Opening door...");
         speed_percent *= +1;
         errorcode_door_start_wrong = ErrorCode::Code::door_start_opening_wrong;
+        errorcode_door_end_wrong = ErrorCode::Code::door_end_opening_wrong;
         expected_start_state = DoorStateEnum::CLOSED;
+        expected_end_state = DoorStateEnum::OPEN;        
         atomic_set(&m_target_doorstate, DoorStateEnum::OPEN);
     }
     else {
         LOG_INF("Closing door...");
         speed_percent *= -1;
         errorcode_door_start_wrong = ErrorCode::Code::door_start_closing_wrong;
+        errorcode_door_end_wrong = ErrorCode::Code::door_end_closing_wrong;
         expected_start_state = DoorStateEnum::OPEN;
+        expected_end_state = DoorStateEnum::CLOSED;        
         atomic_set(&m_target_doorstate, DoorStateEnum::CLOSED);
+    }
+
+    if (m_doorState.get() == expected_end_state) {
+        LOG_INF("Already there, doing nothing");
+        return ErrorCode(m_instance, ErrorCode::Code::success);
     }
     
     if (m_doorState.get() != expected_start_state) {
-        LOG_WRN("Start position wrong!");
+        LOG_WRN("Start state wrong!");
         // not returning, we want to continue no matter the init state!
         ErrorCode(m_instance, errorcode_door_start_wrong, 1);
     }
@@ -49,9 +60,15 @@ const ErrorCode DoorControl::openClose(bool do_open) {
     int ret = k_sem_take(&m_semaphore_target_doorstate_reached, K_SECONDS(30));
     m_motor.setSpeed(0.0f);
 
-    if (ret == EAGAIN) {
-        LOG_WRN("Awaiting doorstate to reach target timed out!");
+    if (ret != 0) {
+        LOG_WRN("Awaiting doorstate to reach target timed out! (ret=%i)", ret);
         return ErrorCode(m_instance, ErrorCode::Code::timeout, 1);
+    }
+
+    // just checking again..
+    if (m_doorState.get() != expected_end_state) {
+        LOG_WRN("End state wrong! (ret=%i)", ret);
+        return ErrorCode(m_instance, errorcode_door_end_wrong, 1);
     }
     LOG_INF("Target doorstate reached!");
     return ErrorCode(m_instance, ErrorCode::Code::success);
@@ -73,7 +90,7 @@ void DoorControl::callback_doorstate(DoorStateEnum message) {
 
 
 void static_callback_doorstate(void* thisptr, DoorStateEnum message) {
-	LOG_INF("Callback doorstate received");
+	LOG_DBG("Callback doorstate received");
     DoorControl* door_control = static_cast<DoorControl*>(thisptr);
     door_control->callback_doorstate(message);
 }
