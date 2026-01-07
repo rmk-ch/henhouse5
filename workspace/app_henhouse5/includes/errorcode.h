@@ -18,6 +18,10 @@ class ErrorCode {
             endswitch_bottom = 10,
             motor_poweron_pin = 11,
             door_state = 12,
+            led_green = 13,
+            led_blue = 14,
+            led_red = 15,
+            status_leds = 16,
             
         };
         enum Code : uint8_t {

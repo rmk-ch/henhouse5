@@ -2,6 +2,7 @@
 #include "errorcode.h"
 #include "inputpin.h"
 #include "outputpin.h"
+#include "statusleds.h"
 #include "motor.h"
 #include "doorstate.h"
 #include "doorcontrol.h"
@@ -12,10 +13,23 @@ LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 K_THREAD_STACK_DEFINE(stack_door_state, 4096);
 const int32_t prio_door_state = K_PRIO_COOP(1);
 
+K_THREAD_STACK_DEFINE(stack_status_leds, 1024);
+const int32_t prio_status_leds = K_PRIO_COOP(10); // higher number = lower prio
+
 int main(void)
 {
     ErrorCode ec;
     LOG_INF("Hello to Henhouse5!");
+    
+    OutputPin led_green(ErrorCode::Instance::led_green, GPIO_DT_SPEC_GET(DT_NODELABEL(green_led_2), gpios));
+    //OutputPin led_blue(ErrorCode::Instance::led_blue, GPIO_DT_SPEC_GET(DT_NODELABEL(blue_led_1), gpios)); // blue is communication
+    OutputPin led_red(ErrorCode::Instance::led_red, GPIO_DT_SPEC_GET(DT_NODELABEL(red_led_3), gpios));
+    led_green.init(false, false);
+    // led_blue.init(false, true);
+    led_red.init(false, true);
+    StatusLeds status_leds(ErrorCode::Instance::status_leds, led_green, led_blue, led_red, stack_status_leds, K_THREAD_STACK_SIZEOF(stack_status_leds), prio_status_leds);
+    status_leds.init();
+
     
     InputPin button_open(ErrorCode::Instance::button_open, GPIO_DT_SPEC_GET(DT_ALIAS(button_open), gpios));
     InputPin endswitch_bottom(ErrorCode::Instance::endswitch_bottom, GPIO_DT_SPEC_GET(DT_NODELABEL(endswitchbottom), gpios), GPIO_INT_EDGE_BOTH);

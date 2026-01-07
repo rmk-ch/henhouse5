@@ -28,6 +28,7 @@ target_sources(app PRIVATE
     src/thread.cpp
     src/outputpin.cpp
     src/inputpin.cpp
+    src/statusleds.cpp
     src/pwm.cpp
     src/doorstate.cpp
     src/doorcontrol.cpp

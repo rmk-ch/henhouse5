@@ -12,7 +12,7 @@ DoorState::DoorState(const ErrorCode::Instance instance, InputPin& endswitchTop,
 }
 
 
-const ErrorCode DoorState::run() {
+const ErrorCode DoorState::run_internal() {
 	LOG_INF("Doorstate started");
     update_state();
     k_msgq_init(&m_endswitches_queue, m_endswitches_queue_buffer, sizeof(ErrorCode::Instance), m_n_endswitches_queue_max_entries);

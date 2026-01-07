@@ -7,7 +7,7 @@ LOG_MODULE_REGISTER(Thread, LOG_LEVEL_INF);
 static void static_run(void * ptr1, void * ptr2, void * ptr3) {
 	Thread* thread = static_cast<Thread*>(ptr1);
 	LOG_DBG("Starting thread");
-	thread->run();
+	thread->run_internal();
 }
 
 
@@ -37,6 +37,6 @@ const ErrorCode Thread::init() {
 }
 
 
-const ErrorCode Thread::run() {
+const ErrorCode Thread::run_internal() {
 	return ErrorCode(m_instance, ErrorCode::Code::not_implemented, 2);
 }
