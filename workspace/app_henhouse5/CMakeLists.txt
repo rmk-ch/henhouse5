@@ -33,5 +33,7 @@ target_sources(app PRIVATE
     src/doorstate.cpp
     src/doorcontrol.cpp
     src/motor.cpp
+    src/rtc.cpp
+    src/triggerdoor.cpp
     src/main.cpp
     )

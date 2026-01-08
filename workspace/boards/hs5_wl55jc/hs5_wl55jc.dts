@@ -109,6 +109,7 @@
 		motor-a-dir = &dira;
 		motor-poweron = &motorpoweron;
 		button-open = &user_button_1;
+		rtc = &rtc;
 
 		led0 = &green_led_2;
 		// sw0 = &user_button_1;

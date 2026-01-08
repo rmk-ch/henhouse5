@@ -22,7 +22,8 @@ class ErrorCode {
             led_blue = 14,
             led_red = 15,
             status_leds = 16,
-            
+            trigger_door = 17,
+            rtc = 18,
         };
         enum Code : uint8_t {
             success = 0,

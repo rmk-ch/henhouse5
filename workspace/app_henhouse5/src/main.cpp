@@ -6,15 +6,20 @@
 #include "motor.h"
 #include "doorstate.h"
 #include "doorcontrol.h"
+#include "rtc.hpp"
+#include "triggerdoor.h"
 
 LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 
 
 K_THREAD_STACK_DEFINE(stack_door_state, 4096);
-const int32_t prio_door_state = K_PRIO_COOP(1);
+const int32_t prio_door_state = K_PRIO_COOP(1); // higher number = lower prio
 
 K_THREAD_STACK_DEFINE(stack_status_leds, 1024);
 const int32_t prio_status_leds = K_PRIO_COOP(10); // higher number = lower prio
+
+K_THREAD_STACK_DEFINE(stack_triggerdoor, 1024);
+const int32_t prio_triggerdoor = K_PRIO_COOP(2); // higher number = lower prio
 
 int main(void)
 {
@@ -27,9 +32,16 @@ int main(void)
     led_green.init(false, false);
     // led_blue.init(false, true);
     led_red.init(false, true);
-    StatusLeds status_leds(ErrorCode::Instance::status_leds, led_green, led_blue, led_red, stack_status_leds, K_THREAD_STACK_SIZEOF(stack_status_leds), prio_status_leds);
+    StatusLeds status_leds(ErrorCode::Instance::status_leds, led_green, led_red, stack_status_leds, K_THREAD_STACK_SIZEOF(stack_status_leds), prio_status_leds);
     status_leds.init();
 
+    // inputs
+    Rtc rtc(ErrorCode::Instance::rtc);
+    rtc.init();
+    LOG_INF("Setting Datetime...");
+	rtc.set_date_time(3,2,1,4,5,2020);
+    TriggerDoor trigger_door(ErrorCode::Instance::trigger_door, rtc, stack_triggerdoor, K_THREAD_STACK_SIZEOF(stack_triggerdoor), prio_triggerdoor);
+    trigger_door.init();
     
     InputPin button_open(ErrorCode::Instance::button_open, GPIO_DT_SPEC_GET(DT_ALIAS(button_open), gpios));
     InputPin endswitch_bottom(ErrorCode::Instance::endswitch_bottom, GPIO_DT_SPEC_GET(DT_NODELABEL(endswitchbottom), gpios), GPIO_INT_EDGE_BOTH);
@@ -54,6 +66,7 @@ int main(void)
 
     // actors
     motor.init();
+
 
 
     // motor.testMotor();
