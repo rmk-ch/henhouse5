@@ -4,7 +4,7 @@
 LOG_MODULE_REGISTER(DoorState, LOG_LEVEL_INF);
 
 DoorState::DoorState(const ErrorCode::Instance instance, InputPin& endswitchTop, InputPin& endswitchBottom, k_thread_stack_t * stack, const uint32_t stack_size, const uint32_t priority) :
-    Thread(instance, stack, stack_size, priority),
+    Thread(instance, stack, stack_size, priority, "DoorState"),
     Publisher(instance),
     m_state(DoorStateEnum::UNINITIALIZED),
     m_endswitch_top(endswitchTop),

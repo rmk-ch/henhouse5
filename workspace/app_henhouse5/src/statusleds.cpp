@@ -4,7 +4,7 @@
 LOG_MODULE_REGISTER(StatusLeds, LOG_LEVEL_INF);
 
 StatusLeds::StatusLeds(ErrorCode::Instance instance, OutputPin& ledGreen, OutputPin& ledRed, k_thread_stack_t * stack_area, const uint32_t stack_size, const int32_t priority) :
-    Thread(instance, stack_area, stack_size, priority),
+    Thread(instance, stack_area, stack_size, priority, "StatusLeds"),
     m_ledGreen(ledGreen),
     m_ledRed(ledRed) {
     

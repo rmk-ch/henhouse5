@@ -37,10 +37,10 @@ int main(void)
 
     // inputs
     Rtc rtc(ErrorCode::Instance::rtc);
-    rtc.init();
-    LOG_INF("Setting Datetime...");
-	rtc.set_date_time(3,2,1,4,5,2020);
     TriggerDoor trigger_door(ErrorCode::Instance::trigger_door, rtc, stack_triggerdoor, K_THREAD_STACK_SIZEOF(stack_triggerdoor), prio_triggerdoor);
+    rtc.registerCallback(static_callback_rtc_alarm, &trigger_door);
+    rtc.init();
+	rtc.set_date_time(3,2,1,4,5,2020);
     trigger_door.init();
     
     InputPin button_open(ErrorCode::Instance::button_open, GPIO_DT_SPEC_GET(DT_ALIAS(button_open), gpios));
@@ -67,16 +67,18 @@ int main(void)
     // actors
     motor.init();
 
-
-
     // motor.testMotor();
 
-    // k_sleep(K_SECONDS(5));
+    k_sleep(K_SECONDS(5));
     while (true) {
         door_control.openClose(true);
-        k_sleep(K_SECONDS(5));
+        k_sleep(K_SECONDS(10));
         door_control.openClose(false);
-        k_sleep(K_SECONDS(5));
+        k_sleep(K_SECONDS(10));
+    }
+
+    while (true) {
+        k_sleep(K_HOURS(1));
     }
 
 	return 0;

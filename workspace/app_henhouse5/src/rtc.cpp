@@ -9,7 +9,7 @@ LOG_MODULE_REGISTER(Rtc, LOG_LEVEL_INF);
 #include <zephyr/sys/util.h>
 
 Rtc::Rtc(const ErrorCode::Instance instance) :
-    m_instance(instance),
+    Publisher(instance),
     m_rtc(DEVICE_DT_GET(DT_ALIAS(rtc)))
     {
     
@@ -25,6 +25,8 @@ const ErrorCode Rtc::init() {
 
 static void alarm_callback(const struct device *dev, uint16_t id, void *this_ptr) {
     LOG_INF("Alarm id %u", id);
+    Rtc* rtc = static_cast<Rtc*>(this_ptr);
+    rtc->_notify(id);
 }
 
 
@@ -45,6 +47,8 @@ const ErrorCode Rtc::set_date_time(int tm_sec, int tm_min, int tm_hour, int tm_m
         LOG_ERR("Cannot write date time: %d\n", ret);
 		return ErrorCode(m_instance, ErrorCode::runtime, 1);
 	}
+	LOG_INF("RTC set: %04d-%02d-%02d %02d:%02d:%02d", tm.tm_year+1900,
+	       tm.tm_mon+1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
     return ErrorCode(m_instance, ErrorCode::success);
 }
 
@@ -85,6 +89,21 @@ const ErrorCode Rtc::log_date_time() {
 
 const ErrorCode Rtc::set_alarm(int tm_hour, int tm_min, int tm_sec) {
     int ret;
+
+    // sanitize time!
+    while (tm_sec >= 60) {
+        tm_min += 1;
+        tm_sec -= 60;
+    }
+    while (tm_min >= 60) {
+        tm_hour += 1;
+        tm_min -= 60;
+    }
+    while (tm_hour >= 24) {
+        tm_hour -= 24;
+    }
+
+
     LOG_INF("Setting alarm time to %02u:%02u:%02u!", tm_hour, tm_min, tm_sec);
     ret = rtc_alarm_set_callback(m_rtc, 0, alarm_callback, this);
     if (ret != 0) {

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "errorcode.h"
+#include "pubsub.h"
 
-
-class Rtc {
+class Rtc : public Publisher<uint16_t> {
     public:
         Rtc(const ErrorCode::Instance instance);
         virtual ~Rtc() {};
@@ -24,6 +24,5 @@ class Rtc {
         // const ErrorCode log_alarm_time();
 
     protected:
-        const ErrorCode::Instance m_instance;
         const struct device * const m_rtc;
 };
