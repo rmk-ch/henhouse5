@@ -23,3 +23,4 @@ class DoorControl {
 };
 
 void static_callback_doorstate(void* thisptr, DoorStateEnum message);
+void static_callback_openclosedoor(void* thisptr, bool do_open);

@@ -22,7 +22,7 @@ class ErrorCode {
             led_blue = 14,
             led_red = 15,
             status_leds = 16,
-            trigger_door = 17,
+            door_trigger_auto = 17,
             rtc = 18,
         };
         enum Code : uint8_t {
@@ -35,6 +35,7 @@ class ErrorCode {
             runtime = 6,
             not_implemented = 7,
             container_full = 8,
+            unexpected_exit = 9,
             door_start_closing_wrong = 64,
             door_start_opening_wrong = 65,
             door_end_closing_wrong = 66,
