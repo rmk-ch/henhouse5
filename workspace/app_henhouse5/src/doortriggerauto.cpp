@@ -68,10 +68,3 @@ const ErrorCode DoorTriggerAuto::auto_open_close() {
 void DoorTriggerAuto::callback_rtc_alarm(uint16_t alarm_id) {
     k_sem_give(&m_alarm_semaphore);
 }
-
-
-void static_callback_rtc_alarm(void* thisptr, uint16_t alarm_id) {
-	LOG_DBG("Callback static received");
-    DoorTriggerAuto* instance = static_cast<DoorTriggerAuto*>(thisptr);
-    instance->callback_rtc_alarm(alarm_id);
-}

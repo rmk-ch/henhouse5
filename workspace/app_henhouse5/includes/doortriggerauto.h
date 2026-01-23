@@ -5,7 +5,7 @@
 #include "pubsub.h"
 #include "rtc.hpp"
 
-class DoorTriggerAuto : public Thread, public Publisher<bool> {
+class DoorTriggerAuto : public Thread, public Publisher<2,bool> {
     public:
         DoorTriggerAuto(ErrorCode::Instance instance, Rtc& rtc, k_thread_stack_t * stack_area, const uint32_t stack_size, const int32_t priority);
         virtual ~DoorTriggerAuto() {};
@@ -29,5 +29,3 @@ class DoorTriggerAuto : public Thread, public Publisher<bool> {
         const int m_close_time_hour = 18;
         const int m_close_time_min = 30;
 };
-
-void static_callback_rtc_alarm(void* thisptr, uint16_t alarm_id);

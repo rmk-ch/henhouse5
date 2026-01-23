@@ -39,9 +39,9 @@ int main(void)
     // inputs
     Rtc rtc(ErrorCode::Instance::rtc);
     DoorTriggerAuto door_trigger_auto(ErrorCode::Instance::door_trigger_auto, rtc, stack_doortriggerauto, K_THREAD_STACK_SIZEOF(stack_doortriggerauto), prio_doortriggerauto);
-    rtc.registerCallback(static_callback_rtc_alarm, &door_trigger_auto);
+    rtc.registerCallback([&door_trigger_auto](uint16_t alarm_id) -> void {return door_trigger_auto.callback_rtc_alarm(alarm_id);});
     rtc.init();
-	rtc.set_date_time(3,2,1,4,5,2020);
+	rtc.set_date_time(50,29,8,4,5,2020);
     
     InputPin button_open(ErrorCode::Instance::button_open, GPIO_DT_SPEC_GET(DT_ALIAS(button_open), gpios));
     InputPin endswitch_bottom(ErrorCode::Instance::endswitch_bottom, GPIO_DT_SPEC_GET(DT_NODELABEL(endswitchbottom), gpios), GPIO_INT_EDGE_BOTH);
@@ -53,9 +53,9 @@ int main(void)
     Motor motor = Motor(ErrorCode::Instance::motor, pwm, brake_pin, dir_pin);
     DoorControl door_control(ErrorCode::Instance::doorcontrol, motor, door_state);
 
-    endswitch_bottom.registerCallback(&static_callback_endswitches, &door_state);
-    endswitch_top.registerCallback(&static_callback_endswitches, &door_state);
-    door_state.registerCallback(&static_callback_doorstate, &door_control);
+    endswitch_bottom.registerCallback([&door_state](uint32_t pin_instance_id) -> void {return door_state.callback_endswitches(pin_instance_id);});
+    endswitch_top.registerCallback([&door_state](uint32_t pin_instance_id) -> void {return door_state.callback_endswitches(pin_instance_id);});
+    door_state.registerCallback([&door_control](DoorStateEnum state) -> void {return door_control.callback_doorstate(state);});
     
     endswitch_bottom.init();
     endswitch_top.init();
@@ -64,7 +64,7 @@ int main(void)
     door_control.init();
     door_state.init();
     
-    door_trigger_auto.registerCallback(&static_callback_openclosedoor, &door_control);
+    door_trigger_auto.registerCallback([&door_control](bool do_open) -> void {door_control.openClose(do_open);});
     door_trigger_auto.init();
 
     // actors

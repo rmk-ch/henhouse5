@@ -20,7 +20,9 @@ class DoorControl {
         DoorState& m_doorState;
         atomic_t m_target_doorstate;
         struct k_sem m_semaphore_target_doorstate_reached;
-};
 
-void static_callback_doorstate(void* thisptr, DoorStateEnum message);
-void static_callback_openclosedoor(void* thisptr, bool do_open);
+
+        static const uint32_t m_n_endswitches_queue_max_entries = 4;
+        char m_endswitches_queue_buffer[m_n_endswitches_queue_max_entries * sizeof(uint32_t)];
+        struct k_msgq m_endswitches_queue;
+};

@@ -19,7 +19,7 @@ struct InputPin_PrivateCallbackContainer {
     ErrorCode::Instance m_instance;
     InputPin* this_ptr;
 };
-class InputPin : public Publisher<uint32_t> {
+class InputPin : public Publisher<2, uint32_t> {
     public:
         /**
          * callback_event: choose one of https://docs.zephyrproject.org/latest/doxygen/html/group__gpio__interface.html#header-member-group,
@@ -29,15 +29,10 @@ class InputPin : public Publisher<uint32_t> {
         virtual ~InputPin() {};
 
         const ErrorCode init();
-        
-        const bool get();
-
-        // const ErrorCode registerCallback(static_fcn_uint32* function, void * instance);
-        
+        const bool get();        
     protected:
         const ErrorCode::Instance m_instance;
         const struct gpio_dt_spec m_pin;
         struct InputPin_PrivateCallbackContainer m_cb_container;
         const uint32_t m_gpio_event;
-
 };

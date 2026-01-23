@@ -87,17 +87,3 @@ void DoorControl::callback_doorstate(DoorStateEnum message) {
         LOG_DBG("Not interested in doorstate=%u", message);
     }
 }
-
-
-void static_callback_doorstate(void* thisptr, DoorStateEnum message) {
-	LOG_DBG("Callback doorstate");
-    DoorControl* instance = static_cast<DoorControl*>(thisptr);
-    instance->callback_doorstate(message);
-}
-
-void static_callback_openclosedoor(void* thisptr, bool do_open) {
-	LOG_DBG("Callback openclosedoor");
-    DoorControl* instance = static_cast<DoorControl*>(thisptr);
-    instance->openClose(do_open);
-
-}

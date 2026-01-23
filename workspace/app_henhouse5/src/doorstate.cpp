@@ -18,8 +18,8 @@ const ErrorCode DoorState::run_internal() {
     k_msgq_init(&m_endswitches_queue, m_endswitches_queue_buffer, sizeof(ErrorCode::Instance), m_n_endswitches_queue_max_entries);
 
     while(true) {
-        uint32_t message;
-        k_msgq_get(&m_endswitches_queue, &message, K_FOREVER);
+        uint32_t pin_instance_id;
+        k_msgq_get(&m_endswitches_queue, &pin_instance_id, K_FOREVER);
         update_state();
     }
 
@@ -67,13 +67,6 @@ const DoorStateEnum DoorState::get() {
     return m_state;
 }
 
-void DoorState::callback_endswitches(uint32_t message) {
-    k_msgq_put(&m_endswitches_queue, &message, K_NO_WAIT);
-}
-
-
-void static_callback_endswitches(void* thisptr, uint32_t message) {
-	LOG_DBG("Callback static received");
-    DoorState* door_state = static_cast<DoorState*>(thisptr);
-    door_state->callback_endswitches(message);
+void DoorState::callback_endswitches(uint32_t pin_instance_id) {
+    k_msgq_put(&m_endswitches_queue, &pin_instance_id, K_NO_WAIT);
 }

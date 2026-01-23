@@ -20,6 +20,7 @@ class Rtc : public Publisher<uint16_t> {
             
         const ErrorCode log_date_time();
         const ErrorCode get_time(int& tm_hour, int& tm_min, int& tm_sec);
+        const ErrorCode get_time_posix(time_t &tm)
         const ErrorCode set_alarm(int tm_hour, int tm_min, int tm_sec);
         // const ErrorCode log_alarm_time();
 
