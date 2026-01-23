@@ -7,6 +7,7 @@
 #include "doorstate.h"
 #include "doorcontrol.h"
 #include "rtc.hpp"
+#include "doorcontrolthread.h"
 #include "doortriggerauto.h"
 
 LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
@@ -21,6 +22,9 @@ const int32_t prio_status_leds = K_PRIO_COOP(10); // higher number = lower prio
 K_THREAD_STACK_DEFINE(stack_doortriggerauto, 1024);
 const int32_t prio_doortriggerauto = K_PRIO_COOP(2); // higher number = lower prio
 
+K_THREAD_STACK_DEFINE(stack_doorcontrolthread, 1024);
+const int32_t prio_doorcontrolthread = K_PRIO_COOP(3); // higher number = lower prio
+
 int main(void)
 {
     ErrorCode ec;
@@ -28,10 +32,10 @@ int main(void)
     LOG_INF("Hello to Henhouse5!");
     
     OutputPin led_green(ErrorCode::Instance::led_green, GPIO_DT_SPEC_GET(DT_NODELABEL(green_led_2), gpios));
-    //OutputPin led_blue(ErrorCode::Instance::led_blue, GPIO_DT_SPEC_GET(DT_NODELABEL(blue_led_1), gpios)); // blue is communication
-    OutputPin led_red(ErrorCode::Instance::led_red, GPIO_DT_SPEC_GET(DT_NODELABEL(red_led_3), gpios));
     led_green.init(false, false);
+    //OutputPin led_blue(ErrorCode::Instance::led_blue, GPIO_DT_SPEC_GET(DT_NODELABEL(blue_led_1), gpios)); // blue is communication
     // led_blue.init(false, true);
+    OutputPin led_red(ErrorCode::Instance::led_red, GPIO_DT_SPEC_GET(DT_NODELABEL(red_led_3), gpios));
     led_red.init(false, true);
     StatusLeds status_leds(ErrorCode::Instance::status_leds, led_green, led_red, stack_status_leds, K_THREAD_STACK_SIZEOF(stack_status_leds), prio_status_leds);
     status_leds.init();
@@ -52,6 +56,7 @@ int main(void)
     DoorState door_state(ErrorCode::Instance::door_state, endswitch_bottom, endswitch_top, stack_door_state, K_THREAD_STACK_SIZEOF(stack_door_state), prio_door_state);
     Motor motor = Motor(ErrorCode::Instance::motor, pwm, brake_pin, dir_pin);
     DoorControl door_control(ErrorCode::Instance::doorcontrol, motor, door_state);
+    DoorControlThread door_control_thread(ErrorCode::Instance::doorcontrolthread, door_control, stack_doorcontrolthread, K_THREAD_STACK_SIZEOF(stack_doorcontrolthread), prio_doorcontrolthread);
 
     endswitch_bottom.registerCallback([&door_state](uint32_t pin_instance_id) -> void {return door_state.callback_endswitches(pin_instance_id);});
     endswitch_top.registerCallback([&door_state](uint32_t pin_instance_id) -> void {return door_state.callback_endswitches(pin_instance_id);});
@@ -63,8 +68,9 @@ int main(void)
     
     door_control.init();
     door_state.init();
+    door_control_thread.init();
     
-    door_trigger_auto.registerCallback([&door_control](bool do_open) -> void {door_control.openClose(do_open);});
+    door_trigger_auto.registerCallback([&door_control_thread](bool do_open) -> void {door_control_thread.openClose(do_open, DoorCommanderEnum::AUTO);});
     door_trigger_auto.init();
 
     // actors

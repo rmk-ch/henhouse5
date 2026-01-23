@@ -5,7 +5,7 @@
 #include "errorcode.h"
 #include "inputpin.h"
 
-enum DoorStateEnum : uint32_t {
+enum class DoorStateEnum : uint32_t {
     UNINITIALIZED = 0,
     OPEN = 1,
     CLOSED = 2,

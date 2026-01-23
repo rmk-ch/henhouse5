@@ -7,7 +7,7 @@ DoorControl::DoorControl(ErrorCode::Instance instance, Motor& motor, DoorState &
     m_instance(instance),
     m_motor(motor),
     m_doorState(doorState),
-    m_target_doorstate(DoorStateEnum::UNINITIALIZED) {
+    m_target_doorstate(static_cast<uint32_t>(DoorStateEnum::UNINITIALIZED)) {
     
     }
 
@@ -30,7 +30,7 @@ const ErrorCode DoorControl::openClose(bool do_open) {
         errorcode_door_end_wrong = ErrorCode::Code::door_end_opening_wrong;
         expected_start_state = DoorStateEnum::CLOSED;
         expected_end_state = DoorStateEnum::OPEN;        
-        atomic_set(&m_target_doorstate, DoorStateEnum::OPEN);
+        atomic_set(&m_target_doorstate, static_cast<uint32_t>(DoorStateEnum::OPEN));
     }
     else {
         LOG_INF("Closing door...");
@@ -39,7 +39,7 @@ const ErrorCode DoorControl::openClose(bool do_open) {
         errorcode_door_end_wrong = ErrorCode::Code::door_end_closing_wrong;
         expected_start_state = DoorStateEnum::OPEN;
         expected_end_state = DoorStateEnum::CLOSED;        
-        atomic_set(&m_target_doorstate, DoorStateEnum::CLOSED);
+        atomic_set(&m_target_doorstate, static_cast<uint32_t>(DoorStateEnum::CLOSED));
     }
 
     if (m_doorState.get() == expected_end_state) {
@@ -76,14 +76,14 @@ const ErrorCode DoorControl::openClose(bool do_open) {
 
 
 
-void DoorControl::callback_doorstate(DoorStateEnum message) {
+void DoorControl::callback_doorstate(DoorStateEnum state) {
     // thread context: DoorState!
     // therefore, atomic!
     DoorStateEnum state_to_forward = static_cast<DoorStateEnum>(atomic_get(&m_target_doorstate));
-    if (message == state_to_forward) {
+    if (state == state_to_forward) {
         k_sem_give(&m_semaphore_target_doorstate_reached);
     }
     else {
-        LOG_DBG("Not interested in doorstate=%u", message);
+        LOG_DBG("Not interested in doorstate=%u", static_cast<uint32_t>(state));
     }
 }

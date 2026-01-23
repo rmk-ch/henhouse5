@@ -24,6 +24,7 @@ class ErrorCode {
             status_leds = 16,
             door_trigger_auto = 17,
             rtc = 18,
+            doorcontrolthread = 18,
         };
         enum Code : uint8_t {
             success = 0,

@@ -18,10 +18,12 @@ class DoorTriggerAuto : public Thread, public Publisher<2,bool> {
     protected:
         const bool should_now_be_open();
         const ErrorCode update_alarm();
-
-
+        const ErrorCode do_openclose(bool do_open);
+        
+        
         Rtc& m_rtc;
         struct k_sem m_alarm_semaphore;
+        bool m_next_do_open;
 
         const int m_open_time_hour = 8;
         const int m_open_time_min = 30;
