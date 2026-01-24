@@ -13,17 +13,21 @@
 LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 
 
-K_THREAD_STACK_DEFINE(stack_door_state, 4096);
-const int32_t prio_door_state = K_PRIO_COOP(1); // higher number = lower prio
 
-K_THREAD_STACK_DEFINE(stack_status_leds, 1024);
-const int32_t prio_status_leds = K_PRIO_COOP(10); // higher number = lower prio
+///////////////////////////////////////////////////////////////////////////////
+// Threads
+///////////////////////////////////////////////////////////////////////////////
+K_THREAD_STACK_DEFINE(stack_doorState, 4096);
+const int32_t prio_doorState = K_PRIO_COOP(1); // higher number = lower prio
 
-K_THREAD_STACK_DEFINE(stack_doortriggerauto, 1024);
-const int32_t prio_doortriggerauto = K_PRIO_COOP(2); // higher number = lower prio
+K_THREAD_STACK_DEFINE(stack_statusLeds, 1024);
+const int32_t prio_statusLeds = K_PRIO_COOP(10); // higher number = lower prio
 
-K_THREAD_STACK_DEFINE(stack_doorcontrolthread, 1024);
-const int32_t prio_doorcontrolthread = K_PRIO_COOP(3); // higher number = lower prio
+K_THREAD_STACK_DEFINE(stack_doorTriggerAuto, 1024);
+const int32_t prio_doorTriggerAuto = K_PRIO_COOP(2); // higher number = lower prio
+
+K_THREAD_STACK_DEFINE(stack_doorControlThread, 1024);
+const int32_t prio_doorControlThread = K_PRIO_COOP(3); // higher number = lower prio
 
 int main(void)
 {
@@ -31,60 +35,54 @@ int main(void)
     k_sleep(K_SECONDS(1)); // awaiting shell thread to start such that logs are shown
     LOG_INF("Hello to Henhouse5!");
     
-    OutputPin led_green(ErrorCode::Instance::led_green, GPIO_DT_SPEC_GET(DT_NODELABEL(green_led_2), gpios));
-    led_green.init(false, false);
+    OutputPin ledGreen(ErrorCode::Instance::ledGreen, GPIO_DT_SPEC_GET(DT_NODELABEL(green_led_2), gpios));
+    ledGreen.init(false, false);
     //OutputPin led_blue(ErrorCode::Instance::led_blue, GPIO_DT_SPEC_GET(DT_NODELABEL(blue_led_1), gpios)); // blue is communication
     // led_blue.init(false, true);
-    OutputPin led_red(ErrorCode::Instance::led_red, GPIO_DT_SPEC_GET(DT_NODELABEL(red_led_3), gpios));
-    led_red.init(false, true);
-    StatusLeds status_leds(ErrorCode::Instance::status_leds, led_green, led_red, stack_status_leds, K_THREAD_STACK_SIZEOF(stack_status_leds), prio_status_leds);
-    status_leds.init();
+    OutputPin ledRed(ErrorCode::Instance::ledRed, GPIO_DT_SPEC_GET(DT_NODELABEL(red_led_3), gpios));
+    ledRed.init(false, true);
+    StatusLeds statusLeds(ErrorCode::Instance::statusLeds, ledGreen, ledRed, stack_statusLeds, K_THREAD_STACK_SIZEOF(stack_statusLeds), prio_statusLeds);
+    statusLeds.start();
 
     // inputs
     Rtc rtc(ErrorCode::Instance::rtc);
-    DoorTriggerAuto door_trigger_auto(ErrorCode::Instance::door_trigger_auto, rtc, stack_doortriggerauto, K_THREAD_STACK_SIZEOF(stack_doortriggerauto), prio_doortriggerauto);
-    rtc.registerCallback([&door_trigger_auto](uint16_t alarm_id) -> void {return door_trigger_auto.callback_rtc_alarm(alarm_id);});
+    DoorTriggerAuto doorTriggerAuto(ErrorCode::Instance::doorTriggerAuto, rtc, stack_doorTriggerAuto, K_THREAD_STACK_SIZEOF(stack_doorTriggerAuto), prio_doorTriggerAuto);
+    rtc.registerCallback([&doorTriggerAuto](uint16_t alarmId) -> void {return doorTriggerAuto.alarmCallback(alarmId);});
     rtc.init();
 	rtc.set_date_time(50,29,8,4,5,2020);
     
-    InputPin button_open(ErrorCode::Instance::button_open, GPIO_DT_SPEC_GET(DT_ALIAS(button_open), gpios));
-    InputPin endswitch_bottom(ErrorCode::Instance::endswitch_bottom, GPIO_DT_SPEC_GET(DT_NODELABEL(endswitchbottom), gpios), GPIO_INT_EDGE_BOTH);
-    InputPin endswitch_top(ErrorCode::Instance::endswitch_top, GPIO_DT_SPEC_GET(DT_NODELABEL(endswitchtop), gpios), GPIO_INT_EDGE_BOTH);
-    Pwm pwm(ErrorCode::Instance::motor_pwm, PWM_DT_SPEC_GET(DT_NODELABEL(green_pwm_led)));
-    OutputPin brake_pin(ErrorCode::Instance::motor_brake_pin, GPIO_DT_SPEC_GET(DT_ALIAS(motor_a_brake), gpios));
-    OutputPin dir_pin(ErrorCode::Instance::motor_dir_pin, GPIO_DT_SPEC_GET(DT_ALIAS(motor_a_dir), gpios));
-    DoorState door_state(ErrorCode::Instance::door_state, endswitch_bottom, endswitch_top, stack_door_state, K_THREAD_STACK_SIZEOF(stack_door_state), prio_door_state);
-    Motor motor = Motor(ErrorCode::Instance::motor, pwm, brake_pin, dir_pin);
-    DoorControl door_control(ErrorCode::Instance::doorcontrol, motor, door_state);
-    DoorControlThread door_control_thread(ErrorCode::Instance::doorcontrolthread, door_control, stack_doorcontrolthread, K_THREAD_STACK_SIZEOF(stack_doorcontrolthread), prio_doorcontrolthread);
+    InputPin buttonOpen(ErrorCode::Instance::buttonOpen, GPIO_DT_SPEC_GET(DT_ALIAS(button_open), gpios), GPIO_INT_EDGE_FALLING);
+    InputPin buttonClose(ErrorCode::Instance::buttonClose, GPIO_DT_SPEC_GET(DT_ALIAS(button_close), gpios), GPIO_INT_EDGE_FALLING);
+    InputPin endswitchBottom(ErrorCode::Instance::endswitchBottom, GPIO_DT_SPEC_GET(DT_NODELABEL(endswitchbottom), gpios), GPIO_INT_EDGE_BOTH);
+    InputPin endswitchTop(ErrorCode::Instance::endswitchTop, GPIO_DT_SPEC_GET(DT_NODELABEL(endswitchtop), gpios), GPIO_INT_EDGE_BOTH);
+    Pwm pwm(ErrorCode::Instance::motorPwm, PWM_DT_SPEC_GET(DT_NODELABEL(green_pwm_led)));
+    OutputPin brakePin(ErrorCode::Instance::motorBrakePin, GPIO_DT_SPEC_GET(DT_ALIAS(motor_a_brake), gpios));
+    OutputPin dirPin(ErrorCode::Instance::motorDirPin, GPIO_DT_SPEC_GET(DT_ALIAS(motor_a_dir), gpios));
+    DoorState doorState(ErrorCode::Instance::doorState, endswitchBottom, endswitchTop, stack_doorState, K_THREAD_STACK_SIZEOF(stack_doorState), prio_doorState);
+    Motor motor = Motor(ErrorCode::Instance::motor, pwm, brakePin, dirPin);
+    DoorControl doorControl(ErrorCode::Instance::doorControl, motor, doorState);
+    DoorControlThread doorControlThread(ErrorCode::Instance::doorControlThread, doorControl, stack_doorControlThread, K_THREAD_STACK_SIZEOF(stack_doorControlThread), prio_doorControlThread);
 
-    endswitch_bottom.registerCallback([&door_state](uint32_t pin_instance_id) -> void {return door_state.callback_endswitches(pin_instance_id);});
-    endswitch_top.registerCallback([&door_state](uint32_t pin_instance_id) -> void {return door_state.callback_endswitches(pin_instance_id);});
-    door_state.registerCallback([&door_control](DoorStateEnum state) -> void {return door_control.callback_doorstate(state);});
+    endswitchBottom.registerCallback([&doorState](uint32_t pinInstanceId) -> void {return doorState.endswitchChanged(pinInstanceId);});
+    endswitchTop.registerCallback([&doorState](uint32_t pinInstanceId) -> void {return doorState.endswitchChanged(pinInstanceId);});
+    buttonOpen.registerCallback([&doorControlThread](uint32_t pinInstanceId) -> void {doorControlThread.openClose(true, DoorCommanderEnum::MANUAL);});
+    buttonClose.registerCallback([&doorControlThread](uint32_t pinInstanceId) -> void {doorControlThread.openClose(false, DoorCommanderEnum::MANUAL);});
+    doorState.registerCallback([&doorControl](DoorStateEnum state) -> void {return doorControl.doorstateChanged(state);});
     
-    endswitch_bottom.init();
-    endswitch_top.init();
-    button_open.init();
+    endswitchBottom.init();
+    endswitchTop.init();
+    buttonOpen.init();
+    buttonClose.init();
     
-    door_control.init();
-    door_state.init();
-    door_control_thread.init();
+    doorControl.init();
+    doorState.start();
+    doorControlThread.start();
     
-    door_trigger_auto.registerCallback([&door_control_thread](bool do_open) -> void {door_control_thread.openClose(do_open, DoorCommanderEnum::AUTO);});
-    door_trigger_auto.init();
+    doorTriggerAuto.registerCallback([&doorControlThread](bool doOpen) -> void {doorControlThread.openClose(doOpen, DoorCommanderEnum::AUTO);});
+    doorTriggerAuto.start();
 
     // actors
     motor.init();
-
-    // motor.testMotor();
-
-    // k_sleep(K_SECONDS(5));
-    // while (true) {
-    //     door_control.openClose(true);
-    //     k_sleep(K_SECONDS(10));
-    //     door_control.openClose(false);
-    //     k_sleep(K_SECONDS(10));
-    // }
 
     while (true) {
         k_sleep(K_HOURS(1));
@@ -92,3 +90,4 @@ int main(void)
 
 	return 0;
 }
+    

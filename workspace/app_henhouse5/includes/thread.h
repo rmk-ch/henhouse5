@@ -11,8 +11,8 @@ class Thread {
     public:
         Thread(const ErrorCode::Instance instance, k_thread_stack_t * stack_area, const uint32_t stack_size, const int32_t priority, const std::string& name);
         virtual ~Thread() {};
-        virtual const ErrorCode init(); 
-        virtual const ErrorCode run_internal(); // not to be called from outside, but is public to be called from callback...
+        virtual const ErrorCode start(); 
+        virtual const ErrorCode run(); // not to be called from outside, but is public to be called from callback...
 
     protected:
         const ErrorCode::Instance m_instance;

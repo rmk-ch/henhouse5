@@ -10,24 +10,24 @@ class DoorTriggerAuto : public Thread, public Publisher<2,bool> {
         DoorTriggerAuto(ErrorCode::Instance instance, Rtc& rtc, k_thread_stack_t * stack_area, const uint32_t stack_size, const int32_t priority);
         virtual ~DoorTriggerAuto() {};
 
-        virtual const ErrorCode run_internal();
-        const ErrorCode auto_open_close();
+        virtual const ErrorCode run();
+        const ErrorCode autoOpenClose();
 
-        void callback_rtc_alarm(uint16_t alarm_id);
+        void alarmCallback(uint16_t alarm_id);
 
     protected:
-        const bool should_now_be_open();
-        const ErrorCode update_alarm();
-        const ErrorCode do_openclose(bool do_open);
+        const bool shouldNowBeOpen();
+        const ErrorCode updateAlarm();
+        const ErrorCode doOpenClose(bool do_open);
         
         
         Rtc& m_rtc;
-        struct k_sem m_alarm_semaphore;
-        bool m_next_do_open;
+        struct k_sem m_alarmSemaphore;
+        bool m_nextDoOpen;
 
-        const int m_open_time_hour = 8;
-        const int m_open_time_min = 30;
+        const int m_openTimeHour = 8;
+        const int m_openTimeMin = 30;
         
-        const int m_close_time_hour = 18;
-        const int m_close_time_min = 30;
+        const int m_closeTimeHour = 18;
+        const int m_closeTimeMin = 30;
 };

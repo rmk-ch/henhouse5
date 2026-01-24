@@ -11,7 +11,7 @@ StatusLeds::StatusLeds(ErrorCode::Instance instance, OutputPin& ledGreen, Output
 }
 
 
-const ErrorCode StatusLeds::run_internal() {
+const ErrorCode StatusLeds::run() {
 	LOG_INF("LED Thread started");
     m_ledGreen.set(true);
     m_ledRed.set(false);

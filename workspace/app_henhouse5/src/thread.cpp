@@ -7,7 +7,7 @@ LOG_MODULE_REGISTER(Thread, LOG_LEVEL_INF);
 static void static_run(void * ptr1, void * ptr2, void * ptr3) {
 	Thread* thread = static_cast<Thread*>(ptr1);
 	LOG_DBG("Starting thread");
-	thread->run_internal();
+	thread->run();
 }
 
 
@@ -32,13 +32,13 @@ Thread::Thread(const ErrorCode::Instance instance, k_thread_stack_t * stack_area
     */
 }
 
-const ErrorCode Thread::init() {
+const ErrorCode Thread::start() {
 	m_tid = k_thread_create(&m_thread_data, m_stack_area, m_stack_size, static_run, static_cast<void*>(this), nullptr, nullptr, m_priority, 0, K_NO_WAIT);
 	k_thread_name_set(&m_thread_data, m_name.c_str());
 	return ErrorCode(m_instance, ErrorCode::Code::success);
 }
 
 
-const ErrorCode Thread::run_internal() {
+const ErrorCode Thread::run() {
 	return ErrorCode(m_instance, ErrorCode::Code::not_implemented, 2);
 }

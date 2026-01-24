@@ -12,7 +12,7 @@ const ErrorCode OutputPin::init(const bool is_active, const bool initial_value) 
     ErrorCode retEC;
 	if (!gpio_is_ready_dt(&m_pin)) {
 		printk("Pin not ready\n");
-		return ErrorCode(m_instance, ErrorCode::not_ready, 1);
+		return ErrorCode(m_instance, ErrorCode::notReady, 1);
 	}
 
 

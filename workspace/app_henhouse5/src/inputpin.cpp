@@ -28,7 +28,7 @@ const ErrorCode InputPin::init() {
     int ret;
 
 	if (!gpio_is_ready_dt(&m_pin)) {
-		return ErrorCode(m_instance, ErrorCode::not_ready, 1);
+		return ErrorCode(m_instance, ErrorCode::notReady, 1);
 	}
 
 	ret = gpio_pin_configure_dt(&m_pin, GPIO_INPUT);

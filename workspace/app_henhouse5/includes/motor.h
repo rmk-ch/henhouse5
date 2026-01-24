@@ -7,6 +7,12 @@
 
 class Motor {
     public:
+        // Singleton instance to allow access in shell commands
+        static Motor* self;
+        static Motor* getInstance() {
+            return self;
+        }
+
         Motor(const ErrorCode::Instance instance, Pwm &pwm, OutputPin &brake_pin, OutputPin &dir_pin);
     	virtual ~Motor() {};
         const ErrorCode init();

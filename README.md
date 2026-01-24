@@ -16,6 +16,12 @@ $ west build -b nucleo_wl55jc samples/basic/blinky
 $ west build -b hs5_c071rb .
 $ west build -b hs5_wl55jc .
 
+## Styleguide
+Class naming: CamelCase (SensorManager)
+Functions: pascalCase (deciCelsiusToCelsius)
+Variables: pascalCase (sensorSelector)
+Members: m_ prefix
+
 
 ## Docker setup rootless
 

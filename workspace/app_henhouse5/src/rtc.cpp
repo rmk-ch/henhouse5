@@ -18,7 +18,7 @@ Rtc::Rtc(const ErrorCode::Instance instance) :
 const ErrorCode Rtc::init() {
     if (!device_is_ready(m_rtc)) {
         LOG_ERR("RTC is not ready\n");
-		return ErrorCode(m_instance, ErrorCode::not_ready, 1);
+		return ErrorCode(m_instance, ErrorCode::notReady, 1);
 	}
     return ErrorCode(m_instance, ErrorCode::success);
 }

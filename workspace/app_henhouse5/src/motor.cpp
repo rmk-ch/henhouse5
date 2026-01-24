@@ -1,9 +1,12 @@
 #include "motor.h"
-#include <zephyr/sys/printk.h>
+#include <zephyr/shell/shell.h>
 #include <cmath>
 
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(Motor, LOG_LEVEL_WRN);
+LOG_MODULE_REGISTER(Motor, LOG_LEVEL_DBG);
+
+
+Motor* Motor::self = nullptr;
 
 Motor::Motor(const ErrorCode::Instance instance, Pwm &pwm, OutputPin &brake_pin, OutputPin &dir_pin) :
     m_instance(instance),
@@ -11,6 +14,10 @@ Motor::Motor(const ErrorCode::Instance instance, Pwm &pwm, OutputPin &brake_pin,
     m_brake_pin(brake_pin),
     m_dir_pin(dir_pin)
 {
+    if (self != nullptr) {
+        LOG_ERR("Motor can only exist once!");
+    }
+    self = this;
 
 }
 
@@ -92,6 +99,44 @@ const ErrorCode Motor::testMotor() {
         }
         k_sleep(K_MSEC(200));
     }
+    ec = setSpeed(0);
+    if (ec.hasFailed()) {
+        return ec;
+    }
+
 
     return ErrorCode(m_instance, ErrorCode::Code::success);
 }
+
+
+/////////////////////////////////////////////////////////////////////
+// Shell commands
+/////////////////////////////////////////////////////////////////////
+static int shellCmd_testMotor(const struct shell *sh, size_t argc, char **argv)
+{
+	ARG_UNUSED(argc);
+	ARG_UNUSED(argv);
+
+	Motor::getInstance()->testMotor();
+
+	return 0;
+}
+static int shellCmd_stop(const struct shell *sh, size_t argc, char **argv)
+{
+	ARG_UNUSED(argc);
+	ARG_UNUSED(argv);
+
+	Motor::getInstance()->setSpeed(0);
+
+	return 0;
+}
+
+
+/* Creating subcommands (level 1 command) array for command "demo". */
+SHELL_STATIC_SUBCMD_SET_CREATE(sub_motor,
+        SHELL_CMD(test, NULL, "Test (spin up and down in both directions)", shellCmd_testMotor),
+        SHELL_CMD(stop, NULL, "Stop", shellCmd_stop),
+        SHELL_SUBCMD_SET_END
+);
+/* Creating root (level 0) command "door" */
+SHELL_CMD_REGISTER(motor, &sub_motor, "Motor", NULL);

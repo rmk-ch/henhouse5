@@ -12,7 +12,7 @@ Pwm::Pwm(const ErrorCode::Instance instance, const struct pwm_dt_spec pwm) :
 const ErrorCode Pwm::init() {
     
 	if (!pwm_is_ready_dt(&m_pwm)) {
-        return ErrorCode(m_instance, ErrorCode::not_ready, 1);
+        return ErrorCode(m_instance, ErrorCode::notReady, 1);
 	}
 	
     return ErrorCode(m_instance, ErrorCode::Code::success);

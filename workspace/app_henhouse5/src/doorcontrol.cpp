@@ -76,7 +76,7 @@ const ErrorCode DoorControl::openClose(bool do_open) {
 
 
 
-void DoorControl::callback_doorstate(DoorStateEnum state) {
+void DoorControl::doorstateChanged(DoorStateEnum state) {
     // thread context: DoorState!
     // therefore, atomic!
     DoorStateEnum state_to_forward = static_cast<DoorStateEnum>(atomic_get(&m_target_doorstate));

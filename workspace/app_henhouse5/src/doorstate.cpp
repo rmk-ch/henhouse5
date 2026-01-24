@@ -12,7 +12,7 @@ DoorState::DoorState(const ErrorCode::Instance instance, InputPin& endswitchTop,
 }
 
 
-const ErrorCode DoorState::run_internal() {
+const ErrorCode DoorState::run() {
 	LOG_INF("Doorstate started");
     update_state();
     k_msgq_init(&m_endswitches_queue, m_endswitches_queue_buffer, sizeof(ErrorCode::Instance), m_n_endswitches_queue_max_entries);
@@ -67,6 +67,6 @@ const DoorStateEnum DoorState::get() {
     return m_state;
 }
 
-void DoorState::callback_endswitches(uint32_t pin_instance_id) {
+void DoorState::endswitchChanged(uint32_t pin_instance_id) {
     k_msgq_put(&m_endswitches_queue, &pin_instance_id, K_NO_WAIT);
 }

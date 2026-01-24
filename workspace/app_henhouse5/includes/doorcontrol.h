@@ -12,7 +12,7 @@ class DoorControl {
         const ErrorCode init();
         const ErrorCode openClose(bool do_open);
 
-        void callback_doorstate(DoorStateEnum state);
+        void doorstateChanged(DoorStateEnum state);
 
     protected:
         const ErrorCode::Instance m_instance;
